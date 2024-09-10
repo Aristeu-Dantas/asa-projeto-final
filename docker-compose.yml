@@ -1,96 +1,105 @@
 services:
-
+  web01:
+    build:
+      context: ./web01
+      dockerfile: Dockerfile
+    image: web01
+    container_name: web01
+    networks:
+      - asa-network
+  web02:
+    build:
+      context: ./web02
+      dockerfile: Dockerfile
+    image: web02
+    container_name: web02
+    networks:
+      - asa-network
+  web03:
+    build:
+      context: ./web03
+      dockerfile: Dockerfile
+    image: web03
+    container_name: web03
+    networks:
+      - asa-network
   proxy:
     build:
-     context: ./nginx
-     dockerfile: Dockerfile.proxy
+      context: ./nginx
+      dockerfile: Dockerfile
     image: proxy
     container_name: proxy
     ports:
-     - "443:443"
-     - "80:80"
+      - "80:80/tcp"
+      - "443:443/tcp"
     depends_on:
-     - wordpress
+      - web01
+      - web02
+      - web03
+      - wordpress
     networks:
-     - asa-network
+      - asa-network
 
+  wordpress:
+      image: wordpress:latest
+      environment:
+        WORDPRESS_DB_HOST: db:3306
+        WORDPRESS_DB_NAME: wordpress
+        WORDPRESS_DB_USER: wordpress
+        WORDPRESS_DB_PASSWORD: wordpress
+      volumes:
+        - wordpress_data:/var/www/html
+      networks:
+        - asa-network
+  db:
+      image: mysql:5.7
+      environment:
+        MYSQL_ROOT_PASSWORD: example
+        MYSQL_DATABASE: wordpress
+        MYSQL_USER: wordpress
+        MYSQL_PASSWORD: wordpress
+      volumes:
+        - db_data:/var/lib/mysql
+      networks:
+        - asa-network
   dns:
     build:
-     context: ./DNS
-     dockerfile: Dockerfile
-    image: bind9
-    container_name: bind9
+      context: ./dns
+      dockerfile: Dockerfile
+    image: ubuntu:latest
+    container_name: dns
+    hostname: ns1.ifrn.asa.br
+    restart: always
+    tty: true
     ports:
-     - "53:53/udp"
-
-
-
-  db:
-    # We use a mariadb image which supports both amd64 & arm64 architecture
-    image: mariadb:10.6.4-focal
-    # If you really want to use MySQL, uncomment the following line
-    #image: mysql:8.0.27
-    command: '--default-authentication-plugin=mysql_native_password'
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "953:953/tcp"
     volumes:
-      - db_data:/var/lib/mysql
-    restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=somewordpress
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=wordpress
-      - MYSQL_PASSWORD=wordpress
+      - ./dns/etc:/etc/bind
     networks:
-     - asa-network
-
-  db2:
-    # We use a mariadb image which supports both amd64 & arm64 architecture
-    image: mariadb:10.6.4-focal
-    # If you really want to use MySQL, uncomment the following line
-    #image: mysql:8.0.27
-    command: '--default-authentication-plugin=mysql_native_password'
-    volumes:
-      - db_data:/var/lib/mysql2
+      - asa-network
+  email:
+    build:
+      context: ./email
+      dockerfile: Dockerfile
+    image: email
+    container_name: email
+    hostname: mail.ifrn.asa.br
     restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=somewordpress
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=wordpress
-      - MYSQL_PASSWORD=wordpress
+    tty: true
+    ports:
+      - "25:25/tcp"
+      - "587:587/tcp"
     networks:
-     - asa-network
-
-  wordpress2:
-    image: wordpress:latest
-    restart: always
-    environment:
-      - WORDPRESS_DB_HOST=db2
-      - WORDPRESS_DB_USER=wordpress2
-      - WORDPRESS_DB_PASSWORD=wordpress2
-      - WORDPRESS_DB_NAME=wordpress2
-    volumes:
-      - wordpress:/var/www/html
-    networks:
-     - asa-network
-
-  wordpress:
-    image: wordpress:latest
-    restart: always
-    environment:
-      - WORDPRESS_DB_HOST=db
-      - WORDPRESS_DB_USER=wordpress
-      - WORDPRESS_DB_PASSWORD=wordpress
-      - WORDPRESS_DB_NAME=wordpress
-    volumes:
-      - wordpress:/var/www/html
-    networks:
-     - asa-network
-
-networks:
- asa-network:
-  driver: bridge
+      - asa-network
 
 volumes:
+  wordpress_data:
   db_data:
-  wordpress:
 
+#Docker networks
+networks:
+  asa-network:
+    driver: bridge
 
