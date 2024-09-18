@@ -1,16 +1,23 @@
 FROM ubuntu:latest
 
-RUN apt-get update && apt-get install -y bind9 bind9utils bind9-doc
+RUN apt update -y
+RUN apt upgrade -y
+RUN apt install bind9 bind9-utils bind9-doc dnsutils -y
 
-RUN mkdir -p /run/named && \
-    chown bind:bind /run/named && \
-    chmod 755 /run/named
+#RUN mkdir -p /run/named && \
+#     chown -R bind:bind /etc/bind && \
+#     chmod 755 /run/named
 
 
-COPY ./etc/* /etc/bind
+# COPY ./etc/* /etc/bind
+# RUN chown bind:bind /etc/bind
+# RUN chmod -R 755 /etc/bind
+COPY ./etc/ifrn.asa.br /etc/bind
+COPY ./etc/par.ifrn.asa.br /etc/bind
+COPY ./etc/named.conf.local /etc/bind
 
 EXPOSE 53/tcp
 EXPOSE 53/udp
-EXPOSE 953/tcp
+#EXPOSE 953/tcp
 
 CMD ["/usr/sbin/named", "-g", "-c", "/etc/bind/named.conf", "-u", "bind"]

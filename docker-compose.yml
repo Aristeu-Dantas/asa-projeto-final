@@ -25,7 +25,7 @@ services:
       - asa-network
   proxy:
     build:
-      context: ./nginx
+      context: ./proxy
       dockerfile: Dockerfile
     image: proxy
     container_name: proxy
@@ -66,26 +66,25 @@ services:
     build:
       context: ./dns
       dockerfile: Dockerfile
-    image: ubuntu:latest
+    image: dns
     container_name: dns
-    hostname: ns1.ifrn.asa.br
     restart: always
     tty: true
     ports:
       - "53:53/tcp"
       - "53:53/udp"
-      - "953:953/tcp"
-    volumes:
-      - ./dns/etc:/etc/bind
+    #  - "953:953/tcp"
+    #volumes:
+    #  - ./dns/etc:/etc/bind
     networks:
       - asa-network
   email:
     build:
-      context: ./email
+      context: ./E-mail
       dockerfile: Dockerfile
     image: email
     container_name: email
-    hostname: mail.ifrn.asa.br
+    #hostname: mail.ifrn.asa.br
     restart: always
     tty: true
     ports:

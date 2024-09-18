@@ -1,10 +1,11 @@
-zone "portal.asa.br" { // Change to desired zone
+zone "ifrn.asa.br" {
 	type master;
-	file "/etc/bind/db.asa.br";	// Change to zone file path
-	allow-transfer {0.0.0.0; };		// Change to Secondary DNS IP
+	file "/etc/bind/ifrn.asa.br";
+	allow-transfer {0.0.0.0; };
 };
-zone "par.ifrn.asa.br" { // Change to desired zone
+
+zone "par.ifrn.asa.br" {
 	type master;
-	file "/etc/bind/par.ifrn.asa.br";	// Change to zone file path
-	allow-transfer {0.0.0.0; };		// Change to Secondary DNS IP
+	file "/etc/bind/par.ifrn.asa.br";
+	allow-transfer {0.0.0.0; };
 };
