@@ -12,9 +12,9 @@ RUN apt install bind9 bind9-utils bind9-doc dnsutils -y
 # COPY ./etc/* /etc/bind
 # RUN chown bind:bind /etc/bind
 # RUN chmod -R 755 /etc/bind
-COPY ./etc/ifrn.asa.br /etc/bind
-COPY ./etc/par.ifrn.asa.br /etc/bind
-COPY ./etc/named.conf.local /etc/bind
+COPY ifrn.asa.br /etc/bind
+COPY par.ifrn.asa.br /etc/bind
+COPY named.conf.local /etc/bind
 
 EXPOSE 53/tcp
 EXPOSE 53/udp
