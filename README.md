@@ -17,4 +17,4 @@ Complete repository (Github).
 ./script_compose.sh
 ```
 
-# Professor eu não consegui organizar o wordpress a tempo de mandar os emails. Mas as configurações para fazer esse procedimento já foram aplicadas.
+# Currently the project only has the back-end done. In the future I will implement the front when I delve deeper into this area, or feel free to contribute.
